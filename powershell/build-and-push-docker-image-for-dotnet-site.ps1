@@ -77,19 +77,17 @@ function Publish-Project {
         $csproj_file_xml = [xml](Get-Content $item.FullName)
         $project_name = $item.BaseName.ToLower()
         $project_conf = $project_configs[$item.FullName]
-        
-        $csproj_file_xml.Project.PropertyGroup.AssemblyName.ToLower()
 
         if ($project_conf.ProjectName) {
             $project_name = $project_conf.ProjectName
         }
         elseif ($null -ne $csproj_file_xml.Project.PropertyGroup.AssemblyName) {
-            $project_name = $csproj_file_xml.Project.PropertyGroup.AssemblyName.ToLower()
+            $project_name = ($csproj_file_xml.Project.PropertyGroup.AssemblyName | Where-Object { $_ -ne $null }).ToLower()
         }
     
         Write-Host "Current project name:$project_name"
     
-        $target_framework = $csproj_file_xml.Project.PropertyGroup.TargetFramework
+        $target_framework = ($csproj_file_xml.Project.PropertyGroup.TargetFramework | Where-Object { $_ -ne $null }).ToLower()
         Write-Host "Target Framework:$target_framework"
     
         Write-Host "Start to build project $project_name ..."
@@ -121,7 +119,7 @@ function Publish-Project {
         $docker_repo = $project_name
         Write-Host 'Getting current project version number from docker...'
     
-        $version = Get-HarborImageVersion $docker_project $docker_repo
+        $version = [int](Get-HarborImageVersion $docker_project $docker_repo) + 1
         
         if (!$?) {
             exit 6
