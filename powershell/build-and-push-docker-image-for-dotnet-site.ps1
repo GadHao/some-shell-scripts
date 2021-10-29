@@ -50,8 +50,6 @@ function Publish-Project {
         $config_file_directory = $config_file.Directory.FullName
         $project_file = Get-Item (Join-Path $config_file_directory *.csproj)
     
-        $project_file
-    
         if ($project_file.Count -ne 1) {
             Write-Error "There must be one and only one *.csproj file in $config_file_path"
             exit 2
