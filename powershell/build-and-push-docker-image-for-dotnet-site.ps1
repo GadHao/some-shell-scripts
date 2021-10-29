@@ -92,7 +92,7 @@ function Publish-Project {
         $publish_path = Join-Path $item.Directory.FullName publish
         
         Write-Host "Publishing current project to $publish_path ..."
-        dotnet publish $item.FullName -c Release -o $publish_path
+        dotnet publish $item.FullName -c Release -v q --nologo -o $publish_path
     
         if (!$?) {
             Write-Error "Publishing $project_name fail"
@@ -153,4 +153,3 @@ function Publish-Project {
 
 Publish-Project $HarborProjectName
 Write-Host "All images have been successfully pushed!!!"
-
