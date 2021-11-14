@@ -24,3 +24,22 @@ function Copy-Folder {
         }
     }
 }
+
+function Copy-FolderOneLiner {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [String]$FromPath,
+
+        [Parameter(Mandatory)]
+        [String]$ToPath,
+
+        [string[]] $Exclude)
+
+    (New-Item -ItemType Directory $ToPath -Force).FullName | ForEach-Object { 
+        $dest = $_; 
+        $source = (Get-Item $FromPath).FullName;
+        Get-ChildItem $FromPath -Recurse | Where-Object { $item = $_; ($Exclude |
+                ForEach-Object { $item.Name -like $_ }) -notcontains $true } |
+        Copy-Item -Destination { Join-Path $dest $_.FullName.Substring($source.Length) } }
+}
