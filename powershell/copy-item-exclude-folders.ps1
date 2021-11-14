@@ -11,11 +11,12 @@ function Copy-Folder {
     )
 
     if (Test-Path $FromPath -PathType Container) {
-        Get-ChildItem $FromPath -Force | ForEach-Object { 
-            $target_path = Join-Path $ToPath $_.Name
-            if ($_.Name -notin $Exclude) {
-                Copy-Item $_.FullName $target_path -ErrorAction SilentlyContinue
-                Copy-Folder -FromPath $_.FullName $target_path $Exclude
+        Get-ChildItem $FromPath -Force | ForEach-Object {
+            $item = $_
+            $target_path = Join-Path $ToPath $item.Name
+            if (($Exclude | ForEach-Object { $item.Name -like $_ }) -notcontains $true) {
+                Copy-Item $item.FullName $target_path -ErrorAction SilentlyContinue
+                Copy-Folder -FromPath $item.FullName $target_path $Exclude
             }
         }
     }
