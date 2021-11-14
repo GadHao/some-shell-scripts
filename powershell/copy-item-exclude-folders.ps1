@@ -5,11 +5,18 @@ function Copy-Folder {
         [String]$FromPath,
 
         [Parameter(Mandatory)]
-        [String]$ToPath
+        [String]$ToPath,
+
+        [string[]] $Exclude
     )
 
-    if (!(Test-Path $FromPath)) {
-        Write-Error 'The FromPath is not exist'
-        exit 1
+    if (Test-Path $FromPath -PathType Container) {
+        Get-ChildItem $FromPath -Force | ForEach-Object { 
+            $target_path = Join-Path $ToPath $_.Name
+            if ($_.Name -notin $Exclude) {
+                Copy-Item $_.FullName $target_path -ErrorAction SilentlyContinue
+                Copy-Folder -FromPath $_.FullName $target_path $Exclude
+            }
+        }
     }
 }
